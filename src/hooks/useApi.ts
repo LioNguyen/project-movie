@@ -2,8 +2,8 @@ import { createAxios } from "@/utils";
 import { useState } from "react";
 
 export const useApi = () => {
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
+  const [data, setData] = useState<any>(null);
+  const [error, setError] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   const axios = createAxios();
