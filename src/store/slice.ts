@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface MovieState {
-  movieList: any[];
+  movieList: any;
   movieData: any;
 }
 
 const initialState: MovieState = {
-  movieList: [],
+  movieList: null,
   movieData: null,
 };
 

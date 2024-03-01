@@ -1,0 +1,14 @@
+.movie-card {
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  .movie-card {
+    &__thumbnail {
+      img {
+        width: 100%;
+      }
+    }
+  }
+}

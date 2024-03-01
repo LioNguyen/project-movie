@@ -1,9 +1,9 @@
-import "./App.css";
+import { HomePage } from "@/components";
 
 function App() {
   return (
     <>
-      <h1>Movie Project</h1>
+      <HomePage />
     </>
   );
 }

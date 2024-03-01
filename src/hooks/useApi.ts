@@ -8,13 +8,20 @@ export const useApi = () => {
 
   const axios = createAxios();
 
-  const getData = async (url: string) => {
+  const getData = async (
+    url: string,
+    successCallback?: (value: any) => void
+  ) => {
     try {
       setLoading(true);
       const res = await axios.get(url);
 
       if (res) {
         setData(res.data);
+
+        if (successCallback) {
+          successCallback(res.data);
+        }
       }
     } catch (error: any) {
       setError(error);

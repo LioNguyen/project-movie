@@ -11,6 +11,32 @@ export const createAxios = () => {
   return axiosInstance;
 };
 
+export const getData = async (
+  url: string,
+  successCallback?: (res: any) => void,
+  failureCallback?: () => void
+) => {
+  const axios = createAxios();
+
+  try {
+    const res = await axios.get(url);
+
+    if (res) {
+      if (successCallback) {
+        successCallback(res.data);
+      }
+
+      return { data: res.data };
+    }
+  } catch (error) {
+    console.log({ error });
+
+    if (failureCallback) {
+      failureCallback();
+    }
+  }
+};
+
 export const API_END_POINT = {
   NOW_PLAYING: "/3/movie/now_playing",
   TOP_RATED: "/3/movie/top_rated",
