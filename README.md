@@ -15,8 +15,8 @@
 
 ## API
 
-- Current playing movie list: `https://api.themoviedb.org/3/movie/now_playing`
-- Top rated movie list: `https://api.themoviedb.org/3/movie/top_rated`
-- Search: `https://api.themoviedb.org/3/search/movie`
-- Movie Detail: `https://api.themoviedb.org/3/movie/{movie_id}`
-- Movie Image Poster: `https://api.themoviedb.org/3/movie/{movie_id}/images`
+- NOW_PLAYING: `https://api.themoviedb.org/3/movie/now_playing`
+- TOP_RATED: `https://api.themoviedb.org/3/movie/top_rated`
+- SEARCH: `https://api.themoviedb.org/3/search/movie`
+- DETAIL: `https://api.themoviedb.org/3/movie/{movie_id}`
+- POSTER: `https://api.themoviedb.org/3/movie/{movie_id}/images`
