@@ -8,6 +8,7 @@ interface MovieList {
 interface MovieDetail {
   id: string;
   title: string;
+  backdrop_path: string;
   release_date: string;
   runtime: number;
   vote_average: number;

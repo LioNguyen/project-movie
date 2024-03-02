@@ -1,7 +1,7 @@
-import React, { HTMLAttributes, ImgHTMLAttributes, memo } from "react";
+import { ImgHTMLAttributes } from "react";
 
 interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {}
 
-export const Image = memo(({ ...props }: ImageProps) => {
+export const Image = ({ ...props }: ImageProps) => {
   return <img {...props} />;
-});
+};

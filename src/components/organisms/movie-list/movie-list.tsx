@@ -7,6 +7,7 @@ import { IoGrid, IoGridOutline } from "react-icons/io5";
 import { MovieCard } from "@/components";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
+import { getDetail, getImage } from "@/utils";
 
 interface Props {
   listTitle: string;
@@ -39,7 +40,11 @@ export const MovieList = ({ listTitle, listData }: Props) => {
   };
 
   const handleMovieClick = (id: string) => {
-    navigate(`/${id}`);
+    Promise.all([getDetail(id), getImage(id)]);
+
+    setTimeout(() => {
+      navigate(`/${id}`);
+    }, 500);
   };
 
   if (!listData.length) {

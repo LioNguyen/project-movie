@@ -1,10 +1,11 @@
 import "./movie-card.styles.scss";
 
 import { HTMLAttributes, useEffect, useState } from "react";
+import { FaStar } from "react-icons/fa";
 
 import movieBackground from "@/assets/movie-background.jpg";
 import { Image } from "@/components";
-import { getImageUrl, isImgUrlValid } from "@/utils";
+import { fixedNumber, getImageUrl, isImgUrlValid } from "@/utils";
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   id: string;
@@ -39,7 +40,10 @@ export const MovieCard = ({
       <div className="movie-card__thumbnail">
         <Image src={moviePosterUrl} alt={title} loading="lazy" />
       </div>
-      <div className="movie-card__vote">{vote}</div>
+      <div className="movie-card__vote">
+        <FaStar />
+        <span>{fixedNumber(vote, 2)}</span>
+      </div>
       <div className="movie-card__title">{title}</div>
     </div>
   );

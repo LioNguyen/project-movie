@@ -1,3 +1,4 @@
+export * from "./date";
 export * from "./debounce";
 export * from "./image";
 export * from "./lazyLoad";

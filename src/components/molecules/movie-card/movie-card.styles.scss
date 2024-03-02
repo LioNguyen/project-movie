@@ -6,8 +6,37 @@
 
   .movie-card {
     &__thumbnail {
+      overflow: hidden;
       img {
+        transition: all 0.4s ease;
         width: 100%;
+      }
+
+      &:hover {
+        img {
+          transform: scale(1.1);
+        }
+      }
+    }
+    &__vote {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+
+      svg {
+        color: #f5c518;
+      }
+    }
+  }
+
+  @media (min-width: 600px) {
+    .movie-card {
+      &__thumbnail {
+        &:hover {
+          img {
+            transform: scale(1.2);
+          }
+        }
       }
     }
   }

@@ -1,0 +1,29 @@
+.statistics-box {
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+
+  .box-title {
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+  .box-content {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 14px;
+    .highlight {
+      color: #fff;
+      font-size: 18px;
+      font-weight: 500;
+    }
+  }
+
+  @media (min-width: 600px) {
+    .box-content {
+      font-size: 16px;
+      .highlight {
+        font-size: 20px;
+      }
+    }
+  }
+}
