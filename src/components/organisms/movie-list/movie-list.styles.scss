@@ -40,6 +40,9 @@
       &.list {
         grid-template-columns: 1fr;
       }
+      .movie-card {
+        cursor: pointer;
+      }
     }
   }
 

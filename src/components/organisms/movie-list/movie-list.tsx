@@ -6,6 +6,7 @@ import { IoGrid, IoGridOutline } from "react-icons/io5";
 
 import { MovieCard } from "@/components";
 import clsx from "clsx";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   listTitle: string;
@@ -16,6 +17,7 @@ type ViewType = "grid" | "list";
 
 export const MovieList = ({ listTitle, listData }: Props) => {
   const [viewType, setViewType] = useState<ViewType>("grid");
+  const navigate = useNavigate();
 
   const view = [
     {
@@ -34,6 +36,10 @@ export const MovieList = ({ listTitle, listData }: Props) => {
 
   const handleViewChange = (type: ViewType) => {
     setViewType(type);
+  };
+
+  const handleMovieClick = (id: string) => {
+    navigate(`/${id}`);
   };
 
   if (!listData.length) {
@@ -63,6 +69,7 @@ export const MovieList = ({ listTitle, listData }: Props) => {
             imageUrl={item.poster_path}
             title={item.title}
             vote={item.vote_average}
+            onClick={() => handleMovieClick(item.id)}
           />
         ))}
       </div>

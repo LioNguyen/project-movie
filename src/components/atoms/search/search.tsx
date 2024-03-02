@@ -7,7 +7,7 @@ import { DEBOUNCE_DELAY } from "@/constants";
 import { debounce } from "@/utils";
 
 export interface SearchProps {
-  onSearchChange: (value: string) => void;
+  onSearchChange?: (value: string) => void;
 }
 
 export const Search = ({ onSearchChange }: SearchProps) => {

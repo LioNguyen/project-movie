@@ -6,14 +6,14 @@ import {
   Container,
   MovieList,
   Navbar,
-  SearchProps,
+  NavbarProps,
   Tab,
   TabProps,
 } from "@/components";
 import { TAB_LIST } from "@/constants";
 import { useAppSelector } from "@/hooks";
 
-interface HomeProps extends SearchProps, Omit<TabProps, "tabList"> {}
+interface HomeProps extends NavbarProps, Omit<TabProps, "tabList"> {}
 
 export const Home = memo(({ onTabClick, onSearchChange }: HomeProps) => {
   const movieList = useAppSelector((state) => state.movie.movieList);
@@ -44,9 +44,9 @@ export const Home = memo(({ onTabClick, onSearchChange }: HomeProps) => {
   };
 
   return (
-    <Container>
+    <>
       <Navbar onSearchChange={onSearchChange} />
-      {__renderBody()}
-    </Container>
+      <Container id="home">{__renderBody()}</Container>
+    </>
   );
 });

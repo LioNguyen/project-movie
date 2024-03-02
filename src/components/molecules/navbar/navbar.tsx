@@ -1,13 +1,27 @@
-import { Search, SearchProps } from "@/components";
 import "./navbar.styles.scss";
 
-interface NavbarProps extends SearchProps {}
+import { IoIosArrowBack } from "react-icons/io";
 
-export const Navbar = ({ onSearchChange }: NavbarProps) => {
+import { Search, SearchProps } from "@/components";
+
+export interface NavbarProps extends SearchProps {
+  onBack?: () => void;
+}
+
+export const Navbar = ({ onBack, onSearchChange }: NavbarProps) => {
   return (
     <nav className="navbar">
-      <div></div>
-      <Search onSearchChange={onSearchChange} />
+      <div className="content">
+        {onBack ? (
+          <div className="back-icon" onClick={onBack}>
+            <IoIosArrowBack />
+          </div>
+        ) : (
+          <div></div>
+        )}
+
+        {onSearchChange && <Search onSearchChange={onSearchChange} />}
+      </div>
     </nav>
   );
 };

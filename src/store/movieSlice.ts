@@ -1,34 +1,29 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface MovieState {
-  movieList: {
-    page: number;
-    results: any[];
-    total_pages: number;
-    type: MovieListType;
-  } | null;
-  movieData: any;
+  movieList: MovieList | null;
+  movieDetail: MovieDetail | null;
 }
 
 const initialState: MovieState = {
   movieList: null,
-  movieData: null,
+  movieDetail: null,
 };
 
 const movieSlice = createSlice({
   name: "movie",
   initialState,
   reducers: {
-    getMovieList: (state, action) => {
+    getMovieList: (state, action: PayloadAction<MovieList>) => {
       return {
         ...state,
         movieList: action.payload,
       };
     },
-    getMovieDetail: (state, action) => {
+    getMovieDetail: (state, action: PayloadAction<MovieDetail>) => {
       return {
         ...state,
-        movieData: action.payload,
+        movieDetail: action.payload,
       };
     },
   },
