@@ -66,7 +66,8 @@ export const MovieList = ({ listTitle, listData }: Props) => {
         {listData.map((item) => (
           <MovieCard
             key={item.id}
-            imageUrl={item.poster_path}
+            id={item.id}
+            imagePath={item.poster_path}
             title={item.title}
             vote={item.vote_average}
             onClick={() => handleMovieClick(item.id)}

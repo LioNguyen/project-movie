@@ -3,11 +3,13 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 interface MovieState {
   movieList: MovieList | null;
   movieDetail: MovieDetail | null;
+  movieImage: MovieImage | null;
 }
 
 const initialState: MovieState = {
   movieList: null,
   movieDetail: null,
+  movieImage: null,
 };
 
 const movieSlice = createSlice({
@@ -26,8 +28,15 @@ const movieSlice = createSlice({
         movieDetail: action.payload,
       };
     },
+    getMovieImage: (state, action: PayloadAction<MovieImage>) => {
+      return {
+        ...state,
+        movieImage: action.payload,
+      };
+    },
   },
 });
 
-export const { getMovieDetail, getMovieList } = movieSlice.actions;
+export const { getMovieDetail, getMovieImage, getMovieList } =
+  movieSlice.actions;
 export default movieSlice.reducer;

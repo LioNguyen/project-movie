@@ -1,3 +1,5 @@
 export * from "./debounce";
-export * from "./requestApi";
+export * from "./image";
 export * from "./lazyLoad";
+export * from "./number";
+export * from "./requestApi";

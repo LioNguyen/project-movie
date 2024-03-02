@@ -1,7 +1,16 @@
 import axios from "axios";
 
 import store from "@/store";
-import { showToast } from "@/store/globalSlice";
+import { hideLoader, showLoader, showToast } from "@/store/globalSlice";
+import { getMovieDetail, getMovieImage } from "@/store/movieSlice";
+
+export const API_END_POINT = {
+  NOW_PLAYING: "/3/movie/now_playing",
+  TOP_RATED: "/3/movie/top_rated",
+  SEARCH: "/3/search/movie",
+  DETAIL: "/3/movie/{movie_id}",
+  POSTER: "/3/movie/{movie_id}/images",
+};
 
 export const createAxios = () => {
   const axiosInstance = axios.create({
@@ -22,8 +31,12 @@ export const createAxios = () => {
         store.dispatch(
           showToast({
             type: "error",
-            title: "Network Error",
+            title: "Network Error!",
           })
+        );
+      } else {
+        store.dispatch(
+          showToast({ type: "error", title: "Something went wrong!" })
         );
       }
     }
@@ -39,8 +52,8 @@ export const getData = async (
   failureCallback?: () => void
 ) => {
   const axios = createAxios();
-
   try {
+    store.dispatch(showLoader());
     const res = await axios.get(url, { params });
 
     if (res) {
@@ -52,17 +65,25 @@ export const getData = async (
     }
   } catch (error) {
     console.log({ error });
-
+    store.dispatch(
+      showToast({ type: "error", title: "Something went wrong!" })
+    );
     if (failureCallback) {
       failureCallback();
     }
+  } finally {
+    store.dispatch(hideLoader());
   }
 };
 
-export const API_END_POINT = {
-  NOW_PLAYING: "/3/movie/now_playing",
-  TOP_RATED: "/3/movie/top_rated",
-  SEARCH: "/3/search/movie",
-  DETAIL: "/3/movie/{movie_id}",
-  POSTER: "/3/movie/{movie_id}/images",
+export const getImage = (movieId: string) => {
+  getData(API_END_POINT.POSTER.replace("{movie_id}", movieId), null, (res) => {
+    store.dispatch(getMovieImage({ ...res }));
+  });
+};
+
+export const getDetail = (movieId: string) => {
+  getData(API_END_POINT.DETAIL.replace("{movie_id}", movieId), null, (res) => {
+    store.dispatch(getMovieDetail({ ...res }));
+  });
 };
