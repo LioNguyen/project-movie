@@ -1,38 +1,52 @@
+import "./home.styles.scss";
+
 import { memo } from "react";
 
-import { Container, MovieList, Navbar, Tab, TabProps } from "@/components";
+import {
+  Container,
+  MovieList,
+  Navbar,
+  SearchProps,
+  Tab,
+  TabProps,
+} from "@/components";
+import { TAB_LIST } from "@/constants";
 import { useAppSelector } from "@/hooks";
 
-interface HomeProps extends Omit<TabProps, "tabList"> {
-  // movieList: any[];
-}
+interface HomeProps extends SearchProps, Omit<TabProps, "tabList"> {}
 
-export const Home = memo(({ activeTab, onTabClick }: HomeProps) => {
-  const movieList =
-    useAppSelector((state) => state.movie.movieList?.results) || [];
+export const Home = memo(({ onTabClick, onSearchChange }: HomeProps) => {
+  const movieList = useAppSelector((state) => state.movie.movieList);
+  const listData = movieList?.results || [];
 
   console.log("🚀 @log ~ file: home.tsx:12 ~ Home ~ movieList:", movieList);
 
-  const TabList = [
-    {
-      key: "Now Playing",
-      name: "Now Playing",
-      value: "NOW_PLAYING",
-    },
-    {
-      key: "Top Rated",
-      name: "Top Rated",
-      value: "TOP_RATED",
-    },
-  ];
-  const listTitle = TabList.filter((item) => item.value === activeTab)[0].name;
+  const __renderBody = () => {
+    if (!movieList || !movieList?.results?.length) {
+      return <>{/* Empty state here */}</>;
+    }
+
+    if (movieList?.type === "SEARCH") {
+      return <MovieList listTitle="Search Results" listData={listData} />;
+    }
+
+    return (
+      <>
+        <Tab tabList={TAB_LIST} onTabClick={onTabClick} />
+        <MovieList
+          listTitle={
+            movieList?.type === "NOW_PLAYING" ? "Now Playing" : "Top Rated"
+          }
+          listData={listData}
+        />
+      </>
+    );
+  };
 
   return (
     <Container>
-      <Navbar />
-
-      <Tab activeTab={activeTab} tabList={TabList} onTabClick={onTabClick} />
-      <MovieList listTitle={listTitle} listData={movieList} />
+      <Navbar onSearchChange={onSearchChange} />
+      {__renderBody()}
     </Container>
   );
 });

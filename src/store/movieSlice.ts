@@ -1,7 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface MovieState {
-  movieList: any;
+  movieList: {
+    page: number;
+    results: any[];
+    total_pages: number;
+    type: MovieListType;
+  } | null;
   movieData: any;
 }
 

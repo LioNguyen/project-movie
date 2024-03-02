@@ -4,3 +4,16 @@ export const SCREEN_SIZE = {
   lg: 1200,
   xl: 1536,
 };
+
+export const TAB_LIST = [
+  {
+    key: "Now Playing",
+    name: "Now Playing",
+    value: "NOW_PLAYING",
+  },
+  {
+    key: "Top Rated",
+    name: "Top Rated",
+    value: "TOP_RATED",
+  },
+];

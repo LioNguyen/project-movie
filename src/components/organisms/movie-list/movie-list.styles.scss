@@ -8,9 +8,9 @@
 
       .title {
         color: #f5c518;
-        font-size: 2rem;
+        font-size: 1.5rem;
         font-weight: 500;
-        line-height: 2.5rem;
+        line-height: 2rem;
       }
       .view-type-box {
         display: flex;
@@ -45,6 +45,12 @@
 
   @media (min-width: 600px) {
     .movie-list {
+      &__header {
+        .title {
+          font-size: 2rem;
+          line-height: 2.5rem;
+        }
+      }
       &__content {
         .movie-card {
           &__thumbnail {

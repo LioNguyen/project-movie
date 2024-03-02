@@ -34,13 +34,14 @@ export const createAxios = () => {
 
 export const getData = async (
   url: string,
+  params?: any,
   successCallback?: (res: any) => void,
   failureCallback?: () => void
 ) => {
   const axios = createAxios();
 
   try {
-    const res = await axios.get(url);
+    const res = await axios.get(url, { params });
 
     if (res) {
       if (successCallback) {

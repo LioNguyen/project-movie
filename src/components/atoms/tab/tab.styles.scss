@@ -1,16 +1,25 @@
 .tab {
   display: flex;
   align-items: center;
-  gap: 15px;
-  width: 100%;
-  border-bottom: 0.5px solid #fff;
+  gap: 20px;
   padding-bottom: 5px;
+  width: 100%;
 
   .tab-item {
     color: rgba(255, 255, 255, 0.5);
     cursor: pointer;
+    font-size: 14px;
+    padding-bottom: 5px;
+    transition: all 0.2s ease;
     &.active {
       color: rgba(255, 255, 255, 1);
+      border-bottom: 1px solid #f5c518;
+    }
+  }
+
+  @media (min-width: 600px) {
+    .tab-item {
+      font-size: 18px;
     }
   }
 }

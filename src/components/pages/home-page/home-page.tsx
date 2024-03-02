@@ -1,35 +1,50 @@
+import { useEffect } from "react";
+
 import { Home } from "@/components";
-import { useApi, useAppDispatch, useAppSelector } from "@/hooks";
+import { useAppDispatch } from "@/hooks";
 import { getMovieList } from "@/store/movieSlice";
-import { API_END_POINT, createAxios, getData } from "@/utils";
-import { useEffect, useState } from "react";
+import { API_END_POINT, getData } from "@/utils";
 
 export const HomePage = () => {
-  const [listType, setListType] = useState<"NOW_PLAYING" | "TOP_RATED">(
-    "NOW_PLAYING"
-  );
   const dispatch = useAppDispatch();
 
-  const getList = async () => {
-    const endPoint =
-      listType === "NOW_PLAYING"
+  const getList = async (type: MovieListType, params?: any) => {
+    const apiEndPoint =
+      type === "NOW_PLAYING"
         ? API_END_POINT.NOW_PLAYING
-        : API_END_POINT.TOP_RATED;
+        : type === "TOP_RATED"
+        ? API_END_POINT.TOP_RATED
+        : API_END_POINT.SEARCH;
     try {
-      await getData(endPoint, (data) => dispatch(getMovieList(data)));
+      await getData(apiEndPoint, params, (data) =>
+        dispatch(
+          getMovieList({
+            ...data,
+            type,
+          })
+        )
+      );
     } catch (error) {
       console.log({ error });
     }
   };
 
+  const handleSearch = async (keyword: string) => {
+    getList(keyword ? "SEARCH" : "NOW_PLAYING", { query: keyword });
+  };
+
+  const handleListTypeChange = (type: MovieListType) => {
+    getList(type);
+  };
+
   useEffect(() => {
-    getList();
+    getList("NOW_PLAYING");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [listType]);
+  }, []);
 
   return (
     <>
-      <Home activeTab={listType} onTabClick={setListType} />
+      <Home onTabClick={handleListTypeChange} onSearchChange={handleSearch} />
     </>
   );
 };
