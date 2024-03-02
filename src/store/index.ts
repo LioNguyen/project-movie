@@ -1,8 +1,14 @@
-import { configureStore } from "@reduxjs/toolkit";
-import movieReducer from "./slice";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import globalReducer from "./globalSlice";
+import movieReducer from "./movieSlice";
+
+const rootReducers = combineReducers({
+  global: globalReducer,
+  movie: movieReducer,
+});
 
 const store = configureStore({
-  reducer: movieReducer,
+  reducer: rootReducers,
 });
 
 export default store;

@@ -1,5 +1,8 @@
 import axios from "axios";
 
+import store from "@/store";
+import { showToast } from "@/store/globalSlice";
+
 export const createAxios = () => {
   const axiosInstance = axios.create({
     headers: {
@@ -7,6 +10,24 @@ export const createAxios = () => {
     },
     baseURL: import.meta.env.VITE_API_BASE_URL,
   });
+
+  axiosInstance.interceptors.response.use(
+    function (response) {
+      return response;
+    },
+    function (error) {
+      console.log({ error });
+
+      if (error.code === "ERR_NETWORK") {
+        store.dispatch(
+          showToast({
+            type: "error",
+            title: "Network Error",
+          })
+        );
+      }
+    }
+  );
 
   return axiosInstance;
 };

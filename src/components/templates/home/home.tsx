@@ -8,7 +8,8 @@ interface HomeProps extends Omit<TabProps, "tabList"> {
 }
 
 export const Home = memo(({ activeTab, onTabClick }: HomeProps) => {
-  const movieList = useAppSelector((state) => state.movieList?.results) || [];
+  const movieList =
+    useAppSelector((state) => state.movie.movieList?.results) || [];
 
   console.log("🚀 @log ~ file: home.tsx:12 ~ Home ~ movieList:", movieList);
 

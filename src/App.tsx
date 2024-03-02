@@ -1,9 +1,10 @@
-import { HomePage } from "@/components";
+import { HomePage, Toast } from "@/components";
 
 function App() {
   return (
     <>
       <HomePage />
+      <Toast />
     </>
   );
 }
