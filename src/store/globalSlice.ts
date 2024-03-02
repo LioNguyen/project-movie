@@ -6,12 +6,12 @@ interface TOAST {
   show?: boolean;
 }
 interface InitialState {
-  showLoading: boolean;
+  showLoader: boolean;
   showToast: TOAST | null;
 }
 
 const initialState: InitialState = {
-  showLoading: false,
+  showLoader: false,
   showToast: null,
 };
 
@@ -19,16 +19,16 @@ const globalSlice = createSlice({
   name: "global",
   initialState,
   reducers: {
-    showLoading: (state) => {
+    showLoader: (state) => {
       return {
         ...state,
-        showLoading: true,
+        showLoader: true,
       };
     },
-    hideLoading: (state) => {
+    hideLoader: (state) => {
       return {
         ...state,
-        showLoading: false,
+        showLoader: false,
       };
     },
     showToast: (state, action: PayloadAction<TOAST>) => {
@@ -54,6 +54,6 @@ const globalSlice = createSlice({
   },
 });
 
-export const { hideLoading, hideToast, showLoading, showToast } =
+export const { hideLoader, hideToast, showLoader, showToast } =
   globalSlice.actions;
 export default globalSlice.reducer;

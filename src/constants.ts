@@ -1,3 +1,5 @@
+export const DEBOUNCE_DELAY = 400;
+
 export const SCREEN_SIZE = {
   sm: 600,
   md: 900,

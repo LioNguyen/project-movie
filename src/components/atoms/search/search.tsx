@@ -1,8 +1,9 @@
 import "./search.styles.scss";
 
-import { IoIosSearch } from "react-icons/io";
 import { ChangeEvent } from "react";
+import { IoIosSearch } from "react-icons/io";
 
+import { DEBOUNCE_DELAY } from "@/constants";
 import { debounce } from "@/utils";
 
 export interface SearchProps {
@@ -18,7 +19,7 @@ export const Search = ({ onSearchChange }: SearchProps) => {
     <div className="search">
       <input
         placeholder="Search movie"
-        onChange={debounce(handleChange, 500)}
+        onChange={debounce(handleChange, DEBOUNCE_DELAY)}
       />
       <IoIosSearch />
     </div>
