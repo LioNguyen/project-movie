@@ -1,0 +1,18 @@
+.empty-state {
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  height: 300px;
+
+  svg {
+    color: rgba(255, 255, 255, 0.8);
+    width: 100px;
+    height: 100px;
+  }
+  p {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}

@@ -4,6 +4,7 @@ import { memo } from "react";
 
 import {
   Container,
+  EmptyState,
   MovieList,
   Navbar,
   NavbarProps,
@@ -19,11 +20,9 @@ export const Home = memo(({ onTabClick, onSearchChange }: HomeProps) => {
   const movieList = useAppSelector((state) => state.movie.movieList);
   const listData = movieList?.results || [];
 
-  console.log("🚀 @log ~ file: home.tsx:12 ~ Home ~ movieList:", movieList);
-
   const __renderBody = () => {
     if (!movieList || !movieList?.results?.length) {
-      return <>{/* Empty state here */}</>;
+      return <EmptyState />;
     }
 
     if (movieList?.type === "SEARCH") {
