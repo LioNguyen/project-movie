@@ -30,10 +30,10 @@ export const Home = memo(({ onTabClick, onSearchChange }: HomeProps) => {
     if (!movieList) {
       return (
         <div className="skeleton-loading">
-          {Array(5)
+          {Array(10)
             .fill(1)
-            .map((item) => (
-              <Skeleton />
+            .map((_, index) => (
+              <Skeleton key={index} />
             ))}
         </div>
       );
