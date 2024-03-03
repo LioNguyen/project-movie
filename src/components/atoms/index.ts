@@ -3,6 +3,7 @@ export * from "./genre";
 export * from "./image";
 export * from "./loader";
 export * from "./search";
+export * from "./skeleton";
 export * from "./statistics-box";
 export * from "./tab";
 export * from "./text";

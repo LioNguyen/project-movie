@@ -1,4 +1,10 @@
 #home {
+  .skeleton-loading {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 15px 0;
+  }
   .tab {
     margin: 15px 0 30px;
   }

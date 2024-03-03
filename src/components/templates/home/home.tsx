@@ -8,6 +8,7 @@ import {
   MovieList,
   Navbar,
   NavbarProps,
+  Skeleton,
   Tab,
   TabProps,
 } from "@/components";
@@ -18,10 +19,22 @@ interface HomeProps extends NavbarProps, Omit<TabProps, "tabList"> {}
 
 export const Home = memo(({ onTabClick, onSearchChange }: HomeProps) => {
   const movieList = useAppSelector((state) => state.movie.movieList);
+
   const listData = movieList?.results || [];
 
   const __renderBody = () => {
-    if (!movieList || !movieList?.results?.length) {
+    if (!movieList) {
+      return (
+        <div className="skeleton-loading">
+          {Array(5)
+            .fill(1)
+            .map((item) => (
+              <Skeleton />
+            ))}
+        </div>
+      );
+    }
+    if (!movieList?.results?.length) {
       return <EmptyState />;
     }
 
