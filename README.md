@@ -6,7 +6,7 @@
   - [3. User Stories](#3-user-stories)
   - [4. Requirements](#4-requirements)
   - [5. Video Walkthrough](#5-video-walkthrough)
-  - [Submit](#submit)
+  - [6. Submit](#6-submit)
 
 ## 1. NOTE
 
@@ -49,6 +49,8 @@ The following **additional** features are implemented:
 - [x] Add toast popup for any errors or notifications
 - [x] Add debounce to search input
 - [x] Add empty state when there is no results found
+- [x] Add util to check whether image url is valid or not
+- [x] Add image default background when img url is not valid
 - [x] Add image slide in movie detail
 - [x] Add skeleton loading, but still have place to enhance
 - [x] Use Atomic Design Pattern to manage all components
@@ -71,8 +73,10 @@ Room to enhance
 
 Here's a walkthrough of implemented user stories:
 
-> Please record screen to a GIF file and attach link here
+> [Project Gif](https://drive.google.com/file/d/1VCpu7k274b-WqUJiI0yEVGakjwpFecHp/view?usp=drive_link)
 
-## Submit
+## 6. Submit
 
 **When you're done, send us back a link to a repository with your source code, with a description of what you've done and any build instructions in the readme!**
+
+- This is all about my projects. I want to say thank you for giving me a chance to show my skills on this challenge.
