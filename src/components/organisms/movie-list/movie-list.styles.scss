@@ -36,9 +36,33 @@
       grid-gap: 1rem;
       &.grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        .movie-card {
+          &__body {
+            .overview {
+              display: none;
+            }
+          }
+        }
       }
       &.list {
         grid-template-columns: 1fr;
+        .movie-card {
+          &__thumbnail {
+            img {
+              max-width: 120px;
+            }
+          }
+          &__body {
+            display: flex;
+            flex-direction: column-reverse;
+            justify-content: flex-end;
+            .title {
+              font-size: 16px;
+            }
+          }
+
+          flex-direction: row;
+        }
       }
       .movie-card {
         cursor: pointer;
@@ -55,12 +79,12 @@
         }
       }
       &__content {
-        .movie-card {
-          &__thumbnail {
-            img {
-              height: 300px;
-              object-fit: cover;
-              object-position: center top;
+        &.list {
+          .movie-card {
+            &__body {
+              .title {
+                font-size: 18px;
+              }
             }
           }
         }

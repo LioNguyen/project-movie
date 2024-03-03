@@ -4,7 +4,7 @@ import { HTMLAttributes, useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 
 import movieBackground from "@/assets/movie-background.jpg";
-import { Image } from "@/components";
+import { Image, Text } from "@/components";
 import { fixedNumber, getImageUrl, isImgUrlValid } from "@/utils";
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
@@ -12,6 +12,7 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
   imagePath: string;
   vote: number;
   title: string;
+  overview: string;
 }
 
 export const MovieCard = ({
@@ -19,6 +20,7 @@ export const MovieCard = ({
   imagePath,
   title,
   vote,
+  overview,
   ...props
 }: CardProps) => {
   const [moviePosterUrl, setMoviePosterUrl] = useState("");
@@ -38,13 +40,18 @@ export const MovieCard = ({
   return (
     <div className="movie-card" {...props}>
       <div className="movie-card__thumbnail">
-        <Image src={moviePosterUrl} alt={title} loading="lazy" />
+        <Image src={moviePosterUrl} alt={title} />
       </div>
-      <div className="movie-card__vote">
-        <FaStar />
-        <span>{fixedNumber(vote, 2)}</span>
+      <div className="movie-card__body">
+        <div className="overview">
+          <Text content={overview} maxLength={100} />
+        </div>
+        <div className="vote">
+          <FaStar color="#f5c518" />
+          <span>{fixedNumber(vote, 2)}</span>
+        </div>
+        <div className="title">{title}</div>
       </div>
-      <div className="movie-card__title">{title}</div>
     </div>
   );
 };

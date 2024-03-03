@@ -98,7 +98,6 @@ export const Detail = ({ onBack }: DetailProps) => {
                 key={item.src}
                 src={item.src}
                 alt={item.src}
-                loading="lazy"
                 width="100%"
               />
             ))}

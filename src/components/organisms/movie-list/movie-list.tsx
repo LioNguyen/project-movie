@@ -14,32 +14,32 @@ interface Props {
   listData: any[];
 }
 
+const view = [
+  {
+    key: "grid",
+    title: "Grid",
+    icon: <IoGridOutline color="white" />,
+    iconActive: <IoGrid color="white" />,
+  },
+  {
+    key: "list",
+    title: "List",
+    icon: <FaList color="white" />,
+    iconActive: <FaThList color="white" />,
+  },
+];
 type ViewType = "grid" | "list";
 
 export const MovieList = ({ listTitle, listData }: Props) => {
   const [viewType, setViewType] = useState<ViewType>("grid");
   const navigate = useNavigate();
 
-  const view = [
-    {
-      key: "grid",
-      title: "Grid",
-      icon: <IoGridOutline color="white" />,
-      iconActive: <IoGrid color="white" />,
-    },
-    {
-      key: "list",
-      title: "List",
-      icon: <FaList color="white" />,
-      iconActive: <FaThList color="white" />,
-    },
-  ];
-
   const handleViewChange = (type: ViewType) => {
     setViewType(type);
   };
 
   const handleMovieClick = (id: string) => {
+    // This will get data before navigate to detail page -> improve user UX
     Promise.all([getDetail(id), getImage(id)]);
 
     setTimeout(() => {
@@ -75,6 +75,7 @@ export const MovieList = ({ listTitle, listData }: Props) => {
             imagePath={item.poster_path}
             title={item.title}
             vote={item.vote_average}
+            overview={item.overview}
             onClick={() => handleMovieClick(item.id)}
           />
         ))}
