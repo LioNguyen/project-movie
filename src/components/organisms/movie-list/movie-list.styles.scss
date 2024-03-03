@@ -12,6 +12,12 @@
         font-weight: 500;
         line-height: 2rem;
       }
+      .button-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+      }
       .view-type-box {
         display: flex;
         align-items: center;
@@ -70,12 +76,15 @@
     }
   }
 
-  @media (min-width: 600px) {
+  @media (min-width: 500px) {
     .movie-list {
       &__header {
         .title {
           font-size: 2rem;
           line-height: 2.5rem;
+        }
+        .button-wrapper {
+          flex-direction: row;
         }
       }
       &__content {

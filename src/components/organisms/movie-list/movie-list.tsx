@@ -9,7 +9,7 @@ import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
 import { getDetail, getImage } from "@/utils";
 
-interface Props {
+export interface MovieListProps {
   listTitle: string;
   listData: any[];
 }
@@ -30,7 +30,7 @@ const view = [
 ];
 type ViewType = "grid" | "list";
 
-export const MovieList = ({ listTitle, listData }: Props) => {
+export const MovieList = ({ listTitle, listData }: MovieListProps) => {
   const [viewType, setViewType] = useState<ViewType>("grid");
   const navigate = useNavigate();
 
@@ -55,16 +55,19 @@ export const MovieList = ({ listTitle, listData }: Props) => {
     <div className={clsx("movie-list")}>
       <div className="movie-list__header">
         <h3 className="title">{listTitle}</h3>
-        <div className="view-type-box">
-          {view.map((item) => (
-            <div
-              className={clsx("item", item.key === viewType && "active")}
-              key={item.key}
-              onClick={() => handleViewChange(item.key as ViewType)}
-            >
-              {item.key === viewType ? item.iconActive : item.icon}
-            </div>
-          ))}
+
+        <div className="button-wrapper">
+          <div className="view-type-box">
+            {view.map((item) => (
+              <div
+                className={clsx("item", item.key === viewType && "active")}
+                key={item.key}
+                onClick={() => handleViewChange(item.key as ViewType)}
+              >
+                {item.key === viewType ? item.iconActive : item.icon}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       <div className={clsx("movie-list__content", viewType)}>

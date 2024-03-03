@@ -6,6 +6,7 @@ import {
   Container,
   EmptyState,
   MovieList,
+  MovieListProps,
   Navbar,
   NavbarProps,
   Skeleton,
@@ -15,7 +16,10 @@ import {
 import { TAB_LIST } from "@/constants";
 import { useAppSelector } from "@/hooks";
 
-interface HomeProps extends NavbarProps, Omit<TabProps, "tabList"> {}
+interface HomeProps
+  extends NavbarProps,
+    Omit<TabProps, "tabList">,
+    Omit<MovieListProps, "listData" | "listTitle"> {}
 
 export const Home = memo(({ onTabClick, onSearchChange }: HomeProps) => {
   const movieList = useAppSelector((state) => state.movie.movieList);
