@@ -1,4 +1,4 @@
 {
   "rewrites": [{ "source": "/(.*)", "destination": "/" }],
-  "installCommand": "npm ci --omit=optional && npm install --include=optional"
+  "installCommand": "npm install --include=optional"
 }
