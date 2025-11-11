@@ -18,4 +18,9 @@ export const TAB_LIST = [
     name: "Top Rated",
     value: "TOP_RATED",
   },
+  {
+    key: "Upcoming",
+    name: "Upcoming",
+    value: "UPCOMING",
+  },
 ];
