@@ -1,4 +1,4 @@
 {
   "rewrites": [{ "source": "/(.*)", "destination": "/" }],
-  "installCommand": "npm install --legacy-peer-deps --force"
+  "installCommand": "npm ci --omit=optional && npm install --include=optional"
 }
