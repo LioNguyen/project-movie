@@ -1,5 +1,14 @@
 .statistics-board {
   display: flex;
   align-items: flex-start;
-  gap: 15px;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 640px) {
+    gap: 0.75rem;
+  }
+
+  @media (max-width: 360px) {
+    gap: 0.5rem;
+  }
 }

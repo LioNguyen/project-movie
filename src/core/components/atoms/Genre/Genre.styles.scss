@@ -1,20 +1,43 @@
 .genre {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 2px solid #f5c518;
   border-radius: 50px;
-  color: #fff;
+  color: #f5c518;
   cursor: pointer;
-  font-size: 10px;
-  padding: 4px 20px;
+  font-size: 0.75rem;
+  padding: 0.4rem 1rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  white-space: nowrap;
+  text-transform: capitalize;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.4);
+    background: linear-gradient(135deg, #f5c518 0%, #d4a317 100%);
+    color: #000;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(245, 197, 24, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @media (max-width: 640px) {
+    font-size: 0.65rem;
+    padding: 0.35rem 0.75rem;
+    border-width: 1.5px;
+  }
+
+  @media (max-width: 360px) {
+    font-size: 0.6rem;
+    padding: 0.3rem 0.6rem;
   }
 
   @media (min-width: 600px) {
-    font-size: 14px;
+    font-size: 0.875rem;
+    padding: 0.5rem 1.25rem;
   }
 }

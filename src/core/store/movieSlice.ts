@@ -1,16 +1,23 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import type { MovieList, MovieDetail, MovieImage } from "@/core/domains/types";
 
+interface Genre {
+  id: number;
+  name: string;
+}
+
 interface MovieState {
   movieList: MovieList | null;
   movieDetail: MovieDetail | null;
   movieImage: MovieImage | null;
+  genres: Genre[] | null;
 }
 
 const initialState: MovieState = {
   movieList: null,
   movieDetail: null,
   movieImage: null,
+  genres: null,
 };
 
 const movieSlice = createSlice({
@@ -35,9 +42,15 @@ const movieSlice = createSlice({
         movieImage: action.payload,
       };
     },
+    setGenres: (state, action: PayloadAction<Genre[]>) => {
+      return {
+        ...state,
+        genres: action.payload,
+      };
+    },
   },
 });
 
-export const { getMovieDetail, getMovieImage, getMovieList } =
+export const { getMovieDetail, getMovieImage, getMovieList, setGenres } =
   movieSlice.actions;
 export default movieSlice.reducer;

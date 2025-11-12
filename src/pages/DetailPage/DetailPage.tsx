@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { Detail } from "@/core/components";
+import { DetailPageSkeleton } from "@/modules/movieDetail/components/atoms";
 import { useAppDispatch } from "@/core/hooks";
 import { useMovieDetailWithImagesAndVideos } from "@/core/hooks/useMovieService";
 import { getMovieDetail, getMovieImage } from "@/core/store/movieSlice";
@@ -33,13 +34,28 @@ export const DetailPage = () => {
     navigate("/");
   };
 
+  const handleGenreClick = (genreId: number, genreName: string) => {
+    // Navigate back to home and filter by genre
+    // We'll need to pass this info via state or query params
+    navigate(`/?genre=${genreId}`);
+  };
+
   if (!movieId) {
     return <>{/* No data */}</>;
   }
 
+  // Show skeleton loading while data is being fetched
+  if (isLoading || !detail.data || !images.data || !videos.data) {
+    return <DetailPageSkeleton onBack={handleBack} />;
+  }
+
   return (
     <>
-      <Detail onBack={handleBack} videos={videos.data} />
+      <Detail
+        onBack={handleBack}
+        videos={videos.data}
+        onGenreClick={handleGenreClick}
+      />
     </>
   );
 };

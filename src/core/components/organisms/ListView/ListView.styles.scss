@@ -1,46 +1,110 @@
 .list-view {
+  animation: fadeInUp 0.5s ease-out;
+
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 1.5rem 0;
+    margin: 2rem 0 1.5rem 0;
+    gap: 1rem;
+    flex-wrap: wrap;
 
     .title {
       color: #f5c518;
       font-size: 1.5rem;
-      font-weight: 500;
+      font-weight: 700;
       line-height: 2rem;
+      margin: 0;
+      text-shadow: 0 2px 8px rgba(245, 197, 24, 0.3);
+      letter-spacing: 0.5px;
+
+      @media (max-width: 768px) {
+        font-size: 1.25rem;
+      }
+
+      @media (max-width: 500px) {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        flex-basis: 100%;
+      }
     }
+
     .button-wrapper {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       gap: 15px;
       align-items: center;
+
+      @media (max-width: 500px) {
+        gap: 10px;
+      }
     }
+
     .view-type-box {
       display: flex;
       align-items: center;
       gap: 5px;
+      background: rgba(85, 85, 85, 0.5);
+      padding: 4px;
+      border-radius: 6px;
+      backdrop-filter: blur(10px);
+
       .item {
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 30px;
-        height: 30px;
-        transition: all 0.4s ease;
+        width: 36px;
+        height: 36px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 4px;
+        color: #fff;
+
+        &:hover {
+          background-color: #666;
+        }
+
         &.active {
-          background-color: #555;
-          border-radius: 2px;
+          background: linear-gradient(135deg, #f5c518 0%, #d4a317 100%);
+          box-shadow: 0 4px 12px rgba(245, 197, 24, 0.3);
+          color: #000;
+          font-weight: 600;
+        }
+
+        @media (max-width: 500px) {
+          width: 32px;
+          height: 32px;
         }
       }
     }
   }
+
   &__content {
     display: grid;
-    grid-gap: 1rem;
+    grid-gap: 1.25rem;
+    margin-bottom: 2rem;
+
     &.grid {
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+
+      @media (max-width: 1024px) {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      }
+
+      @media (max-width: 768px) {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        grid-gap: 1rem;
+      }
+
+      @media (max-width: 500px) {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        grid-gap: 0.75rem;
+      }
+
+      @media (max-width: 360px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
       .movie-card {
         &__body {
           .overview {
@@ -49,26 +113,69 @@
         }
       }
     }
+
     &.list {
       grid-template-columns: 1fr;
+      grid-gap: 1rem;
+
+      @media (max-width: 500px) {
+        grid-gap: 0.75rem;
+      }
+
       .movie-card {
         &__thumbnail {
           img {
             max-width: 120px;
+            height: 180px;
+            object-fit: cover;
           }
         }
+
         &__body {
           display: flex;
           flex-direction: column-reverse;
           justify-content: flex-end;
+          padding: 12px;
+          gap: 8px;
+
           .title {
             font-size: 16px;
+
+            @media (max-width: 500px) {
+              font-size: 14px;
+            }
+          }
+
+          .overview {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 8px;
+            font-size: 13px;
+
+            @media (max-width: 500px) {
+              font-size: 12px;
+              -webkit-line-clamp: 1;
+              line-clamp: 1;
+            }
+          }
+
+          .genre-tags {
+            margin-top: 16px;
+
+            @media (max-width: 640px) {
+              margin-top: 12px;
+            }
           }
         }
 
         flex-direction: row;
+        align-items: stretch;
       }
     }
+
     .movie-card {
       cursor: pointer;
     }
@@ -77,36 +184,59 @@
   &__pagination {
     display: flex;
     justify-content: center;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+
+    @media (max-width: 500px) {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
 
     // Add spacing between pagination items
     nav {
       ol {
         gap: 0.5rem;
+
+        @media (max-width: 500px) {
+          gap: 0.25rem;
+        }
       }
     }
 
     // Override pagination button colors for dark theme
     button {
       color: #ffffff;
-      border-color: #444;
+      border: 1px solid #444;
       background-color: transparent;
       min-width: 36px;
       white-space: nowrap;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      font-size: 14px;
+
+      @media (max-width: 500px) {
+        min-width: 32px;
+        font-size: 12px;
+        padding: 6px 8px;
+      }
 
       &:hover:not(:disabled) {
-        background-color: #333;
+        background-color: rgba(85, 85, 85, 0.6);
         border-color: #666;
+        transform: translateY(-2px);
       }
 
       &[aria-current="page"] {
-        background-color: #f5c518;
+        background: linear-gradient(135deg, #f5c518 0%, #d4a317 100%);
         color: #000;
         border-color: #f5c518;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(245, 197, 24, 0.3);
 
         &:hover {
-          background-color: #d4a317;
+          background: linear-gradient(135deg, #d4a317 0%, #b8860b 100%);
           border-color: #d4a317;
         }
       }
@@ -127,6 +257,18 @@
 
     svg {
       color: #ffffff;
+      transition: transform 0.3s ease;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 
@@ -135,20 +277,6 @@
       .title {
         font-size: 2rem;
         line-height: 2.5rem;
-      }
-      .button-wrapper {
-        flex-direction: row;
-      }
-    }
-    &__content {
-      &.list {
-        .movie-card {
-          &__body {
-            .title {
-              font-size: 18px;
-            }
-          }
-        }
       }
     }
   }

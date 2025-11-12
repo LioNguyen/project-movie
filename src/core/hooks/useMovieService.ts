@@ -7,12 +7,23 @@ import type {
   MovieVideo,
 } from "@/core/domains/types";
 
+interface Genre {
+  id: number;
+  name: string;
+}
+
+interface GenresResponse {
+  genres: Genre[];
+}
+
 // API Endpoints
 export const MOVIE_ENDPOINTS = {
   NOW_PLAYING: "/3/movie/now_playing",
   TOP_RATED: "/3/movie/top_rated",
   UPCOMING: "/3/movie/upcoming",
   SEARCH: "/3/search/movie",
+  DISCOVER: "/3/discover/movie",
+  GENRES: "/3/genre/movie/list",
   DETAIL: (id: string) => `/3/movie/${id}`,
   IMAGES: (id: string) => `/3/movie/${id}/images`,
   VIDEOS: (id: string) => `/3/movie/${id}/videos`,
@@ -24,12 +35,56 @@ export const movieKeys = {
   lists: () => [...movieKeys.all, "list"] as const,
   list: (type: string, params?: Record<string, unknown>) =>
     [...movieKeys.lists(), type, params] as const,
+  discover: (params?: Record<string, unknown>) =>
+    [...movieKeys.all, "discover", params] as const,
   details: () => [...movieKeys.all, "detail"] as const,
   detail: (id: string) => [...movieKeys.details(), id] as const,
   images: () => [...movieKeys.all, "images"] as const,
   image: (id: string) => [...movieKeys.images(), id] as const,
   videos: () => [...movieKeys.all, "videos"] as const,
   video: (id: string) => [...movieKeys.videos(), id] as const,
+  genres: () => [...movieKeys.all, "genres"] as const,
+};
+
+/**
+ * Hook to fetch all movie genres
+ */
+export const useGenres = () => {
+  return useQuery({
+    queryKey: movieKeys.genres(),
+    queryFn: async (): Promise<Genre[]> => {
+      const response = await axiosInstance.get<GenresResponse>(
+        MOVIE_ENDPOINTS.GENRES
+      );
+      return response.data.genres;
+    },
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours (genres rarely change)
+  });
+};
+
+/**
+ * Hook to fetch movies by genre using Discover API
+ */
+export const useDiscoverMovies = (
+  genreId: number | null,
+  params?: { page?: number; sort_by?: string }
+) => {
+  return useQuery({
+    queryKey: movieKeys.discover({ genreId, ...params }),
+    queryFn: async (): Promise<MovieList> => {
+      if (!genreId) throw new Error("Genre ID is required");
+      const response = await axiosInstance.get(MOVIE_ENDPOINTS.DISCOVER, {
+        params: {
+          with_genres: genreId,
+          sort_by: params?.sort_by || "popularity.desc",
+          page: params?.page || 1,
+        },
+      });
+      return { ...response.data, type: "GENRE_FILTER" };
+    },
+    enabled: !!genreId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 };
 
 /**

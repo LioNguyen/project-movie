@@ -43,4 +43,9 @@ export interface MovieVideoResult {
   published_at: string;
 }
 
-export type MovieListType = "NOW_PLAYING" | "TOP_RATED" | "UPCOMING" | "SEARCH";
+export type MovieListType =
+  | "NOW_PLAYING"
+  | "TOP_RATED"
+  | "UPCOMING"
+  | "SEARCH"
+  | "GENRE_FILTER";

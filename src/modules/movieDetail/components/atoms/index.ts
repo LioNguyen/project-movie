@@ -1,0 +1,1 @@
+export { DetailPageSkeleton } from "./DetailPageSkeleton";

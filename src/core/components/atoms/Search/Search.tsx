@@ -1,6 +1,6 @@
 import "./Search.styles.scss";
 
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 
 import { DEBOUNCE_DELAY } from "@/constants";
@@ -11,17 +11,27 @@ export interface SearchProps {
 }
 
 export const Search = ({ onSearchChange }: SearchProps) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const [hasValue, setHasValue] = useState(false);
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setHasValue(e.target.value.length > 0);
     onSearchChange && onSearchChange(e.target.value);
   };
 
   return (
-    <div className="search">
+    <div
+      className={`search ${isFocused ? "focused" : ""} ${
+        hasValue ? "has-value" : ""
+      }`}
+    >
+      <IoIosSearch className="search-icon" />
       <input
         placeholder="Search movie"
         onChange={debounce(handleChange, DEBOUNCE_DELAY)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
       />
-      <IoIosSearch />
     </div>
   );
 };

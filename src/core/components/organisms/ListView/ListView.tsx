@@ -23,6 +23,7 @@ export interface ListViewProps {
   viewType?: "grid" | "list";
   onViewChange?: (type: "grid" | "list") => void;
   onItemClick?: (id: string) => void;
+  onGenreClick?: (genreId: number, genreName: string) => void;
   currentPage?: number;
   totalPages?: number;
   onPageChange?: (page: number) => void;
@@ -51,6 +52,7 @@ export const ListView = memo(
     viewType = "grid",
     onViewChange,
     onItemClick,
+    onGenreClick,
     currentPage = 1,
     totalPages = 1,
     onPageChange,
@@ -183,7 +185,10 @@ export const ListView = memo(
               title={item.title}
               vote={item.vote_average}
               overview={item.overview}
+              genres={item.genres}
+              genreIds={item.genre_ids}
               onClick={() => handleMovieClick(item.id)}
+              onGenreClick={onGenreClick}
             />
           ))}
         </div>

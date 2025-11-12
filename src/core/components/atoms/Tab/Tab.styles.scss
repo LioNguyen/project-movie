@@ -1,25 +1,78 @@
 .tab {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding-bottom: 5px;
+  gap: 1.25rem;
+  padding-bottom: 0.5rem;
   width: 100%;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  flex-wrap: wrap;
+
+  /* Hide scrollbar while keeping functionality */
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(245, 197, 24, 0.3);
+    border-radius: 2px;
+
+    &:hover {
+      background: rgba(245, 197, 24, 0.6);
+    }
+  }
 
   .tab-item {
     color: rgba(255, 255, 255, 0.5);
     cursor: pointer;
-    font-size: 14px;
-    padding-bottom: 5px;
-    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 4px;
+    white-space: nowrap;
+    font-weight: 500;
+
+    &:hover {
+      color: rgba(255, 255, 255, 0.8);
+      background: rgba(245, 197, 24, 0.1);
+    }
+
     &.active {
-      color: rgba(255, 255, 255, 1);
-      border-bottom: 1px solid #f5c518;
+      color: #f5c518;
+      border-bottom: 2px solid #f5c518;
+      padding-bottom: calc(0.5rem - 2px);
+      font-weight: 600;
+    }
+
+    @media (max-width: 500px) {
+      font-size: 0.75rem;
+      padding: 0.4rem 0.6rem;
+
+      &.active {
+        border-bottom-width: 2px;
+        padding-bottom: calc(0.4rem - 2px);
+      }
     }
   }
 
   @media (min-width: 600px) {
+    gap: 1.5rem;
+
     .tab-item {
-      font-size: 18px;
+      font-size: 1rem;
+      padding: 0.5rem 0.75rem;
+    }
+  }
+
+  @media (min-width: 900px) {
+    gap: 2rem;
+
+    .tab-item {
+      font-size: 1.125rem;
     }
   }
 }

@@ -1,28 +1,70 @@
 .statistics-box {
   color: rgba(255, 255, 255, 0.7);
   text-align: center;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(245, 197, 24, 0.05) 100%
+  );
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(245, 197, 24, 0.1);
+  transition: all 0.3s ease;
+  flex: 1;
+  min-width: 100px;
+
+  &:hover {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(245, 197, 24, 0.1) 100%
+    );
+    border-color: rgba(245, 197, 24, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 197, 24, 0.15);
+  }
 
   .box-title {
-    font-size: 12px;
-    margin-bottom: 5px;
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.6);
+
+    @media (max-width: 360px) {
+      font-size: 0.65rem;
+      margin-bottom: 0.25rem;
+    }
   }
+
   .box-content {
     display: flex;
     align-items: center;
-    gap: 7px;
-    font-size: 14px;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+
     .highlight {
-      color: #fff;
-      font-size: 18px;
-      font-weight: 500;
+      color: #f5c518;
+      font-size: 1.1rem;
+      font-weight: 700;
+
+      @media (max-width: 360px) {
+        font-size: 0.9rem;
+      }
     }
   }
 
   @media (min-width: 600px) {
+    padding: 1rem 1.25rem;
+    min-width: 120px;
+
     .box-content {
-      font-size: 16px;
+      font-size: 1rem;
+
       .highlight {
-        font-size: 20px;
+        font-size: 1.25rem;
       }
     }
   }
