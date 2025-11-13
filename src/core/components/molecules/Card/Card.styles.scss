@@ -1,4 +1,4 @@
-.movie-card {
+.card {
   background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
   color: #fff;
   display: flex;
@@ -37,7 +37,7 @@
       opacity: 1;
     }
 
-    .movie-card {
+    .card {
       &__thumbnail {
         img {
           transform: scale(1.1);
@@ -52,7 +52,7 @@
     }
   }
 
-  .movie-card {
+  .card {
     &__thumbnail {
       overflow: hidden;
       min-width: 80px;
@@ -182,7 +182,7 @@
         0 4px 15px rgba(0, 0, 0, 0.6);
     }
 
-    .movie-card {
+    .card {
       &__body {
         padding: 8px;
 
@@ -204,7 +204,7 @@
   }
 
   @media (min-width: 500px) {
-    .movie-card {
+    .card {
       &__thumbnail {
         img {
           max-height: 300px;

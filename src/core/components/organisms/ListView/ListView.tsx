@@ -6,7 +6,7 @@ import { IoGrid, IoGridOutline } from "react-icons/io5";
 import clsx from "clsx";
 import { isEqual } from "lodash";
 
-import { MovieCard } from "@/core/components";
+import { Card } from "@/core/components";
 import {
   Pagination,
   PaginationContent,
@@ -15,7 +15,7 @@ import {
   PaginationNext,
   PaginationPrevious,
   PaginationEllipsis,
-} from "@/core/components/atoms/pagination";
+} from "@/core/components/atoms/Pagination/pagination";
 
 export interface ListViewProps {
   title: string;
@@ -178,7 +178,7 @@ export const ListView = memo(
         </div>
         <div className={clsx("list-view__content", viewType)}>
           {data.map((item) => (
-            <MovieCard
+            <Card
               key={item.id}
               id={item.id}
               imagePath={item.poster_path}

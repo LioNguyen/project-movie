@@ -1,4 +1,4 @@
-import "./MovieCard.styles.scss";
+import "./Card.styles.scss";
 
 import { HTMLAttributes, useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
@@ -24,7 +24,7 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
   onGenreClick?: (genreId: number, genreName: string) => void;
 }
 
-export const MovieCard = ({
+export const Card = ({
   id,
   imagePath,
   title,
@@ -62,11 +62,11 @@ export const MovieCard = ({
       : [];
 
   return (
-    <div className="movie-card" {...props}>
-      <div className="movie-card__thumbnail">
+    <div className="card" {...props}>
+      <div className="card__thumbnail">
         <Image src={moviePosterUrl} alt={title} />
       </div>
-      <div className="movie-card__body">
+      <div className="card__body">
         <div className="overview">
           <Text content={overview} maxLength={100} />
         </div>

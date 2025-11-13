@@ -1,37 +1,68 @@
 import "./navbar.styles.scss";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { IoMenu, IoClose } from "react-icons/io5";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { Search, SearchProps, Tab, TabProps } from "@/core/components";
 import type { MovieListType } from "@/core/domains/types";
+import { TAB_LIST } from "@/constants";
 
-export interface NavbarProps extends SearchProps {
-  onBack?: () => void;
+export interface NavbarProps extends Partial<SearchProps> {
+  isBack?: boolean;
   tabList?: TabProps["tabList"];
   onTabClick?: TabProps["onTabClick"];
 }
 
 export const Navbar = ({
-  onBack,
-  onSearchChange,
-  tabList,
-  onTabClick,
+  isBack,
+  onSearchChange: onSearchChangeProps,
+  tabList = TAB_LIST,
+  onTabClick: onTabClickProps,
 }: NavbarProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const handleTabClick = (type: MovieListType) => {
-    onTabClick?.(type);
-    setIsMenuOpen(false); // Close menu after selection
-  };
+  const navigate = useNavigate();
+
+  const handleBack = useCallback(() => {
+    navigate("/");
+  }, [navigate]);
+
+  // Handle search changes
+  const handleSearch = useCallback(
+    (keyword: string) => {
+      if (keyword) {
+        setSearchParams({ search: keyword });
+      } else {
+        setSearchParams({});
+      }
+      // Call prop callback if provided
+      onSearchChangeProps?.(keyword);
+    },
+    [setSearchParams, onSearchChangeProps]
+  );
+
+  // Handle tab clicks
+  const handleTabClick = useCallback(
+    (type: MovieListType) => {
+      setSearchParams({});
+      setIsMenuOpen(false);
+      // Call prop callback if provided
+      onTabClickProps?.(type);
+    },
+    [setSearchParams, onTabClickProps]
+  );
+
+  const searchQuery = searchParams.get("search") || "";
 
   return (
     <nav className="navbar">
       <div className="content">
         <div className="navbar__left">
-          {onBack ? (
-            <div className="back-icon" onClick={onBack}>
+          {isBack ? (
+            <div className="back-icon" onClick={handleBack}>
               <IoIosArrowBack />
             </div>
           ) : (
@@ -39,7 +70,7 @@ export const Navbar = ({
               {/* Desktop Tab View */}
               <div className="left-section">
                 {tabList && tabList.length > 0 && (
-                  <Tab tabList={tabList} onTabClick={onTabClick} />
+                  <Tab tabList={tabList} onTabClick={handleTabClick} />
                 )}
               </div>
 
@@ -66,11 +97,9 @@ export const Navbar = ({
           )}
         </div>
 
-        {onSearchChange && (
-          <div className="navbar__search">
-            <Search onSearchChange={onSearchChange} />
-          </div>
-        )}
+        <div className="navbar__search">
+          <Search onSearchChange={handleSearch} />
+        </div>
       </div>
     </nav>
   );

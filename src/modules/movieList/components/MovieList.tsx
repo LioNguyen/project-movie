@@ -1,26 +1,25 @@
 import "./MovieList.styles.scss";
 
-import { memo, useState, useCallback, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import { memo, useCallback, useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { Container, EmptyState, ListView, Navbar } from "@/core/components";
-import { MovieListSkeleton } from "./atoms";
-import { TAB_LIST } from "@/constants";
+import { Container, EmptyState, ListView } from "@/core/components";
+import type { MovieListType } from "@/core/domains/types";
+import { useAppDispatch, useAppSelector } from "@/core/hooks";
 import {
   movieKeys,
-  useMovieList,
-  useGenres,
   useDiscoverMovies,
+  useGenres,
+  useMovieList,
 } from "@/core/hooks/useMovieService";
-import { useAppDispatch, useAppSelector } from "@/core/hooks";
 import {
   getMovieDetail,
   getMovieImage,
   getMovieList,
   setGenres,
 } from "@/core/store/movieSlice";
-import type { MovieListType } from "@/core/domains/types";
+import { MovieListSkeleton } from "./atoms";
 
 export const MovieList = memo(() => {
   const dispatch = useAppDispatch();
@@ -47,14 +46,11 @@ export const MovieList = memo(() => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedGenreId, setSelectedGenreId] = useState<number | null>(null);
 
-  // Handle genre parameter from URL
+  // Handle search query parameter from URL
   useEffect(() => {
-    const genreParam = searchParams.get("genre");
-    if (genreParam) {
-      const genreId = parseInt(genreParam, 10);
-      if (!isNaN(genreId)) {
-        setSelectedGenreId(genreId);
-      }
+    const searchParam = searchParams.get("search");
+    if (searchParam) {
+      handleSearch(searchParam);
     }
   }, [searchParams]);
 
@@ -164,60 +160,56 @@ export const MovieList = memo(() => {
 
   const listResults = movieList?.results || [];
 
-  const __renderBody = () => {
-    if (!movieList || isLoading) {
-      return <MovieListSkeleton />;
-    }
-    if (!movieList?.results?.length) {
-      return <EmptyState />;
-    }
-
-    let currentListTitle =
-      movieList?.type === "SEARCH"
-        ? "Search Results"
-        : movieList?.type === "NOW_PLAYING"
-        ? "Now Playing"
-        : movieList?.type === "TOP_RATED"
-        ? "Top Rated"
-        : movieList?.type === "GENRE_FILTER"
-        ? "Filtered by Genre"
-        : "Upcoming";
-
-    // Update title if filtering by genre
-    if (selectedGenreId && storedGenres) {
-      const selectedGenre = storedGenres.find(
-        (g: { id: number; name: string }) => g.id === selectedGenreId
-      );
-      if (selectedGenre) {
-        currentListTitle = `${selectedGenre.name}`;
-      }
-    }
-
+  if (!movieList || isLoading) {
     return (
-      <>
-        <ListView
-          title={currentListTitle}
-          data={listResults}
-          viewType={viewType}
-          onViewChange={handleViewChange}
-          onItemClick={handleMovieClick}
-          onGenreClick={handleGenreClick}
-          currentPage={currentPage}
-          totalPages={movieList?.total_pages || 1}
-          onPageChange={handlePageChange}
-        />
-      </>
+      <Container id="home">
+        <MovieListSkeleton />
+      </Container>
     );
-  };
+  }
+
+  if (!movieList?.results?.length) {
+    return (
+      <Container id="home">
+        <EmptyState />
+      </Container>
+    );
+  }
+
+  let currentListTitle =
+    movieList?.type === "SEARCH"
+      ? "Search Results"
+      : movieList?.type === "NOW_PLAYING"
+      ? "Now Playing"
+      : movieList?.type === "TOP_RATED"
+      ? "Top Rated"
+      : movieList?.type === "GENRE_FILTER"
+      ? "Filtered by Genre"
+      : "Upcoming";
+
+  // Update title if filtering by genre
+  if (selectedGenreId && storedGenres) {
+    const selectedGenre = storedGenres.find(
+      (g: { id: number; name: string }) => g.id === selectedGenreId
+    );
+    if (selectedGenre) {
+      currentListTitle = `${selectedGenre.name}`;
+    }
+  }
 
   return (
-    <>
-      <Navbar
-        onSearchChange={handleSearch}
-        tabList={searchQuery ? undefined : TAB_LIST}
-        onTabClick={handleListTypeChange}
+    <Container id="home">
+      <ListView
+        title={currentListTitle}
+        data={listResults}
+        viewType={viewType}
+        onViewChange={handleViewChange}
+        onItemClick={handleMovieClick}
+        onGenreClick={handleGenreClick}
+        currentPage={currentPage}
+        totalPages={movieList?.total_pages || 1}
+        onPageChange={handlePageChange}
       />
-      <Container id="home">{__renderBody()}</Container>
-    </>
+    </Container>
   );
 });
