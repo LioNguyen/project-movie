@@ -1,10 +1,8 @@
-export { api, axiosInstance } from './axios'
-export * from './endpoints'
-export {
-  queryClient,
-  queryKeys,
-  invalidateQueries,
-  prefetchQueries,
-  cacheUtils,
-} from './queryClient'
-export { QueryProvider } from './QueryProvider'
+/**
+ * Core Services Export
+ *
+ * Centralized exports for all service-related functionality
+ */
+
+export { api, axiosInstance } from "./axios";
+export * from "./endpoints";

@@ -1,65 +1,56 @@
-import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "@/core/services/axios";
-import type {
-  MovieList,
-  MovieDetail,
-  MovieImage,
-  MovieVideo,
-} from "@/core/domains/types";
+/**
+ * Movie Service - Redux Saga Integration
+ *
+ * This file provides Redux selectors and action creators for movie-related operations.
+ * Previously used React Query, now migrated to Redux Saga for state management.
+ */
 
-interface Genre {
-  id: number;
-  name: string;
-}
-
-interface GenresResponse {
-  genres: Genre[];
-}
-
-// API Endpoints
-export const MOVIE_ENDPOINTS = {
-  NOW_PLAYING: "/3/movie/now_playing",
-  TOP_RATED: "/3/movie/top_rated",
-  UPCOMING: "/3/movie/upcoming",
-  SEARCH: "/3/search/movie",
-  DISCOVER: "/3/discover/movie",
-  GENRES: "/3/genre/movie/list",
-  DETAIL: (id: string) => `/3/movie/${id}`,
-  IMAGES: (id: string) => `/3/movie/${id}/images`,
-  VIDEOS: (id: string) => `/3/movie/${id}/videos`,
-};
-
-// Query keys for caching
-export const movieKeys = {
-  all: ["movies"] as const,
-  lists: () => [...movieKeys.all, "list"] as const,
-  list: (type: string, params?: Record<string, unknown>) =>
-    [...movieKeys.lists(), type, params] as const,
-  discover: (params?: Record<string, unknown>) =>
-    [...movieKeys.all, "discover", params] as const,
-  details: () => [...movieKeys.all, "detail"] as const,
-  detail: (id: string) => [...movieKeys.details(), id] as const,
-  images: () => [...movieKeys.all, "images"] as const,
-  image: (id: string) => [...movieKeys.images(), id] as const,
-  videos: () => [...movieKeys.all, "videos"] as const,
-  video: (id: string) => [...movieKeys.videos(), id] as const,
-  genres: () => [...movieKeys.all, "genres"] as const,
-};
+import { useCallback, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "./useStore";
+import {
+  fetchMovieListRequest,
+  fetchDiscoverMoviesRequest,
+  fetchMovieDetailRequest,
+  fetchMovieImagesRequest,
+  fetchMovieVideosRequest,
+  fetchGenresRequest,
+} from "@/core/store/movieSlice";
+import type { RootState } from "@/core/store";
 
 /**
- * Hook to fetch all movie genres
+ * Hook to fetch and access movie list from Redux store
+ * Dispatches appropriate action based on list type and parameters
  */
-export const useGenres = () => {
-  return useQuery({
-    queryKey: movieKeys.genres(),
-    queryFn: async (): Promise<Genre[]> => {
-      const response = await axiosInstance.get<GenresResponse>(
-        MOVIE_ENDPOINTS.GENRES
-      );
-      return response.data.genres;
-    },
-    staleTime: 24 * 60 * 60 * 1000, // 24 hours (genres rarely change)
-  });
+export const useMovieList = (
+  type: "now_playing" | "top_rated" | "upcoming" | "search",
+  params?: { page?: number; query?: string }
+) => {
+  const dispatch = useAppDispatch();
+  const movieList = useAppSelector((state) => state.movie.movieList);
+  const isLoading = useAppSelector(
+    (state) => state.movie.loadingStates.movieList
+  );
+  const error = useAppSelector((state) => state.movie.error);
+
+  useEffect(() => {
+    // Skip search if no query is provided
+    if (type === "search" && !params?.query) {
+      return;
+    }
+
+    dispatch(
+      fetchMovieListRequest({
+        type,
+        params,
+      })
+    );
+  }, [dispatch, type, params]);
+
+  return {
+    data: movieList,
+    isLoading,
+    error,
+  };
 };
 
 /**
@@ -69,112 +60,137 @@ export const useDiscoverMovies = (
   genreId: number | null,
   params?: { page?: number; sort_by?: string }
 ) => {
-  return useQuery({
-    queryKey: movieKeys.discover({ genreId, ...params }),
-    queryFn: async (): Promise<MovieList> => {
-      if (!genreId) throw new Error("Genre ID is required");
-      const response = await axiosInstance.get(MOVIE_ENDPOINTS.DISCOVER, {
-        params: {
-          with_genres: genreId,
-          sort_by: params?.sort_by || "popularity.desc",
-          page: params?.page || 1,
-        },
-      });
-      return { ...response.data, type: "GENRE_FILTER" };
-    },
-    enabled: !!genreId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-};
+  const dispatch = useAppDispatch();
+  const movieList = useAppSelector((state) => state.movie.movieList);
+  const isLoading = useAppSelector(
+    (state) => state.movie.loadingStates.movieList
+  );
+  const error = useAppSelector((state) => state.movie.error);
 
-/**
- * Hook to fetch movie list (now playing, top rated, upcoming, or search)
- */
-export const useMovieList = (
-  type: "now_playing" | "top_rated" | "upcoming" | "search",
-  params?: { page?: number; query?: string }
-) => {
-  const endpoint =
-    type === "now_playing"
-      ? MOVIE_ENDPOINTS.NOW_PLAYING
-      : type === "top_rated"
-      ? MOVIE_ENDPOINTS.TOP_RATED
-      : type === "upcoming"
-      ? MOVIE_ENDPOINTS.UPCOMING
-      : MOVIE_ENDPOINTS.SEARCH;
+  useEffect(() => {
+    if (!genreId) return;
 
-  return useQuery({
-    queryKey: movieKeys.list(type, params),
-    queryFn: async (): Promise<MovieList> => {
-      const response = await axiosInstance.get(endpoint, { params });
-      return { ...response.data, type: type.toUpperCase() };
-    },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    enabled: type === "search" ? !!params?.query : true, // Only search if query exists
-  });
+    dispatch(
+      fetchDiscoverMoviesRequest({
+        genreId,
+        params,
+      })
+    );
+  }, [dispatch, genreId, params]);
+
+  return {
+    data: movieList,
+    isLoading,
+    error,
+  };
 };
 
 /**
  * Hook to fetch movie details by ID
  */
 export const useMovieDetail = (movieId: string | null) => {
-  return useQuery({
-    queryKey: movieKeys.detail(movieId || ""),
-    queryFn: async (): Promise<MovieDetail> => {
-      if (!movieId) throw new Error("Movie ID is required");
-      const response = await axiosInstance.get(MOVIE_ENDPOINTS.DETAIL(movieId));
-      return response.data;
-    },
-    enabled: !!movieId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
+  const dispatch = useAppDispatch();
+  const movieDetail = useAppSelector((state) => state.movie.movieDetail);
+  const isLoading = useAppSelector(
+    (state) => state.movie.loadingStates.movieDetail
+  );
+  const error = useAppSelector((state) => state.movie.error);
+
+  useEffect(() => {
+    if (!movieId) return;
+
+    dispatch(fetchMovieDetailRequest(movieId));
+  }, [dispatch, movieId]);
+
+  return {
+    data: movieDetail,
+    isLoading,
+    error,
+  };
 };
 
 /**
  * Hook to fetch movie images by ID
  */
 export const useMovieImages = (movieId: string | null) => {
-  return useQuery({
-    queryKey: movieKeys.image(movieId || ""),
-    queryFn: async (): Promise<MovieImage> => {
-      if (!movieId) throw new Error("Movie ID is required");
-      const response = await axiosInstance.get(MOVIE_ENDPOINTS.IMAGES(movieId));
-      return response.data;
-    },
-    enabled: !!movieId,
-    staleTime: 10 * 60 * 1000, // 10 minutes (images rarely change)
-  });
+  const dispatch = useAppDispatch();
+  const movieImage = useAppSelector((state) => state.movie.movieImage);
+  const isLoading = useAppSelector(
+    (state) => state.movie.loadingStates.movieImage
+  );
+  const error = useAppSelector((state) => state.movie.error);
+
+  useEffect(() => {
+    if (!movieId) return;
+
+    dispatch(fetchMovieImagesRequest(movieId));
+  }, [dispatch, movieId]);
+
+  return {
+    data: movieImage,
+    isLoading,
+    error,
+  };
 };
 
 /**
  * Hook to fetch movie videos/trailers by ID
  */
 export const useMovieVideos = (movieId: string | null) => {
-  return useQuery({
-    queryKey: movieKeys.video(movieId || ""),
-    queryFn: async (): Promise<MovieVideo> => {
-      if (!movieId) throw new Error("Movie ID is required");
-      const response = await axiosInstance.get(MOVIE_ENDPOINTS.VIDEOS(movieId));
-      return response.data;
-    },
-    enabled: !!movieId,
-    staleTime: 10 * 60 * 1000, // 10 minutes (videos rarely change)
-  });
+  const dispatch = useAppDispatch();
+  const movieVideos = useAppSelector((state) => state.movie.movieVideos);
+  const isLoading = useAppSelector(
+    (state) => state.movie.loadingStates.movieVideos
+  );
+  const error = useAppSelector((state) => state.movie.error);
+
+  useEffect(() => {
+    if (!movieId) return;
+
+    dispatch(fetchMovieVideosRequest(movieId));
+  }, [dispatch, movieId]);
+
+  return {
+    data: movieVideos,
+    isLoading,
+    error,
+  };
+};
+
+/**
+ * Hook to fetch all movie genres
+ */
+export const useGenres = () => {
+  const dispatch = useAppDispatch();
+  const genres = useAppSelector((state) => state.movie.genres);
+  const isLoading = useAppSelector((state) => state.movie.loadingStates.genres);
+  const error = useAppSelector((state) => state.movie.error);
+
+  useEffect(() => {
+    if (!genres) {
+      dispatch(fetchGenresRequest());
+    }
+  }, [dispatch, genres]);
+
+  return {
+    data: genres,
+    isLoading,
+    error,
+  };
 };
 
 /**
  * Combined hook to fetch both detail and images
  */
 export const useMovieDetailWithImages = (movieId: string | null) => {
-  const detailQuery = useMovieDetail(movieId);
-  const imagesQuery = useMovieImages(movieId);
+  const detail = useMovieDetail(movieId);
+  const images = useMovieImages(movieId);
 
   return {
-    detail: detailQuery,
-    images: imagesQuery,
-    isLoading: detailQuery.isLoading || imagesQuery.isLoading,
-    isError: detailQuery.isError || imagesQuery.isError,
-    error: detailQuery.error || imagesQuery.error,
+    detail,
+    images,
+    isLoading: detail.isLoading || images.isLoading,
+    error: detail.error || images.error,
   };
 };
 
@@ -182,26 +198,111 @@ export const useMovieDetailWithImages = (movieId: string | null) => {
  * Combined hook to fetch detail, images, and videos
  */
 export const useMovieDetailWithImagesAndVideos = (movieId: string | null) => {
-  const detailQuery = useMovieDetail(movieId);
-  const imagesQuery = useMovieImages(movieId);
-  const videosQuery = useMovieVideos(movieId);
+  const detail = useMovieDetail(movieId);
+  const images = useMovieImages(movieId);
+  const videos = useMovieVideos(movieId);
 
   return {
-    detail: detailQuery,
-    images: imagesQuery,
-    videos: videosQuery,
-    isLoading:
-      detailQuery.isLoading || imagesQuery.isLoading || videosQuery.isLoading,
-    isError: detailQuery.isError || imagesQuery.isError || videosQuery.isError,
-    error: detailQuery.error || imagesQuery.error || videosQuery.error,
+    detail,
+    images,
+    videos,
+    isLoading: detail.isLoading || images.isLoading || videos.isLoading,
+    error: detail.error || images.error || videos.error,
   };
+};
+
+// Redux selectors for direct state access
+export const selectMovieList = (state: RootState) => state.movie.movieList;
+export const selectMovieDetail = (state: RootState) => state.movie.movieDetail;
+export const selectMovieImage = (state: RootState) => state.movie.movieImage;
+export const selectMovieVideos = (state: RootState) => state.movie.movieVideos;
+export const selectGenres = (state: RootState) => state.movie.genres;
+export const selectMovieLoadingStates = (state: RootState) =>
+  state.movie.loadingStates;
+export const selectMovieError = (state: RootState) => state.movie.error;
+
+/**
+ * Hook to manage genres fetching
+ * Fetches genres once on mount if not already loaded
+ */
+export const useGenresFetch = () => {
+  const dispatch = useAppDispatch();
+  const storedGenres = useAppSelector((state) => state.movie.genres);
+
+  useEffect(() => {
+    if (!storedGenres) {
+      dispatch(fetchGenresRequest());
+    }
+  }, [dispatch, storedGenres]);
+
+  return { genres: storedGenres };
+};
+
+/**
+ * Hook to fetch movie list with automatic dispatching
+ * Manages fetching based on listType, search query, or genre filter
+ */
+export const useMovieListFetch = (config: {
+  listType: "now_playing" | "top_rated" | "upcoming" | "search";
+  searchQuery: string;
+  currentPage: number;
+  selectedGenreId: number | null;
+}) => {
+  const dispatch = useAppDispatch();
+  const { listType, searchQuery, currentPage, selectedGenreId } = config;
+
+  useEffect(() => {
+    if (selectedGenreId) {
+      // Fetch by genre using discover API
+      dispatch(
+        fetchDiscoverMoviesRequest({
+          genreId: selectedGenreId,
+          params: { page: currentPage },
+        })
+      );
+    } else {
+      // Fetch regular movie list (now playing, top rated, upcoming, or search)
+      dispatch(
+        fetchMovieListRequest({
+          type: listType,
+          params: {
+            page: currentPage,
+            query: searchQuery || undefined,
+          },
+        })
+      );
+    }
+  }, [dispatch, listType, searchQuery, currentPage, selectedGenreId]);
+};
+
+/**
+ * Hook to prefetch movie details for navigation optimization
+ * Returns a callback to prefetch movie detail and images
+ */
+export const useMoviePrefetch = () => {
+  const dispatch = useAppDispatch();
+
+  const prefetchMovie = useCallback(
+    (movieId: string) => {
+      dispatch(fetchMovieDetailRequest(movieId));
+      dispatch(fetchMovieImagesRequest(movieId));
+    },
+    [dispatch]
+  );
+
+  return { prefetchMovie };
 };
 
 export default {
   useMovieList,
+  useDiscoverMovies,
   useMovieDetail,
   useMovieImages,
   useMovieVideos,
+  useGenres,
   useMovieDetailWithImages,
   useMovieDetailWithImagesAndVideos,
+  useGenresFetch,
+  useMovieListFetch,
+  useMoviePrefetch,
 };

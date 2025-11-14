@@ -15,7 +15,7 @@ export const DetailPage = () => {
   const dispatch = useAppDispatch();
 
   // Fetch movie detail, images, and videos
-  const { detail, images, videos, isLoading, isError } =
+  const { detail, images, videos, isLoading, error } =
     useMovieDetailWithImagesAndVideos(movieId);
 
   // Update Redux store when data changes (for backward compatibility)

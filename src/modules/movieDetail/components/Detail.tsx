@@ -1,6 +1,6 @@
 import "./Detail.styles.scss";
 
-import { memo, useEffect, useState } from "react";
+import { memo, useMemo } from "react";
 import { FaStar } from "react-icons/fa";
 import { LuTrendingUp } from "react-icons/lu";
 
@@ -12,97 +12,54 @@ import {
   StatisticsBoxProps,
 } from "@/core/components";
 import { MovieVideo } from "@/core/domains/types";
-import { useAppSelector } from "@/core/hooks";
+import { getYear } from "@/core/utils";
 import {
-  checkAllImgUrl,
-  fixedNumber,
-  getImageUrl,
-  getYear,
-} from "@/core/utils";
+  useMovieBackdrops,
+  useMovieData,
+  useMovieTrailer,
+  useMovieStatistics,
+} from "../handlers";
 
 interface DetailProps {
   videos?: MovieVideo | null;
   onGenreClick?: (genreId: number, genreName: string) => void;
 }
 
-interface MoviePoster {
-  src: string;
-  file_path: string;
-  [key: string]: unknown;
-}
-
 export const Detail = ({ videos, onGenreClick }: DetailProps) => {
-  const [moviePosters, setMoviePosters] = useState<MoviePoster[]>([]);
+  // Use custom hooks for data and logic
+  const {
+    movieData,
+    movieTitle,
+    movieReleaseDate,
+    movieVoteAverage,
+    moviePopularity,
+    movieGenres,
+    movieOverview,
+  } = useMovieData();
 
-  const movieData = useAppSelector((state) => state.movie.movieDetail);
-  const movieImage = useAppSelector((state) => state.movie.movieImage);
-
-  const movieId = movieData?.id || "";
-  const movieTitle = movieData?.title || "";
-  const movieReleaseDate = movieData?.release_date || "";
-  const movieVoteAverage = movieData?.vote_average || 0;
-  const moviePopularity = movieData?.popularity || 0;
-  const movieBackdrops = movieImage?.backdrops || [];
-  const movieGenres = movieData?.genres || [];
-  const movieOverview = movieData?.overview || "";
-
-  // Get official YouTube trailer
-  const officialTrailer = videos?.results?.find(
-    (video) =>
-      video.site === "YouTube" &&
-      video.type === "Trailer" &&
-      video.official === true
+  const { moviePosters } = useMovieBackdrops();
+  const { trailer } = useMovieTrailer(videos);
+  const { statisticsData } = useMovieStatistics(
+    movieVoteAverage,
+    moviePopularity
   );
-  // Fallback to any YouTube trailer if no official one found
-  const trailer =
-    officialTrailer ||
-    videos?.results?.find(
-      (video) => video.site === "YouTube" && video.type === "Trailer"
-    );
 
-  const statisticsList: StatisticsBoxProps[] = [
-    {
-      title: "Rating",
-      icon: <FaStar color="#f5c518" />,
-      statistic: fixedNumber(movieVoteAverage, 2),
-    },
-    {
-      title: "Popularity",
-      icon: <LuTrendingUp color="green" />,
-      statistic: fixedNumber(moviePopularity, 0),
-    },
-  ];
-
-  const getMovieBackdrops = async () => {
-    try {
-      if (movieBackdrops.length) {
-        // Limit to latest 20 images
-        const limitedBackdrops = movieBackdrops.slice(0, 20);
-        const urlList = limitedBackdrops.map((item) =>
-          getImageUrl(item.file_path)
-        );
-
-        const results = await checkAllImgUrl(urlList);
-        const validList = limitedBackdrops
-          .filter((_, index) => results[index])
-          .map((item) => {
-            return {
-              ...item,
-              src: getImageUrl(item.file_path),
-            };
-          });
-
-        setMoviePosters(validList);
-      }
-    } catch (error) {
-      console.log({ error });
-    }
-  };
-
-  useEffect(() => {
-    getMovieBackdrops();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [movieImage]);
+  // Create statistics list with icons (JSX must be in component)
+  const statisticsList: StatisticsBoxProps[] = useMemo(
+    () => [
+      {
+        title: "Rating",
+        icon: <FaStar color="#f5c518" />,
+        statistic: statisticsData.rating,
+      },
+      {
+        title: "Popularity",
+        icon: <LuTrendingUp color="green" />,
+        statistic: statisticsData.popularity,
+      },
+    ],
+    [statisticsData]
+  );
 
   if (!movieData) {
     return (
@@ -144,7 +101,7 @@ export const Detail = ({ videos, onGenreClick }: DetailProps) => {
       <div className="content-section">
         <div className="content__image">
           {moviePosters.length > 0 ? (
-            moviePosters.map((item: MoviePoster) => (
+            moviePosters.map((item) => (
               <Image
                 key={item.src}
                 src={item.src}
