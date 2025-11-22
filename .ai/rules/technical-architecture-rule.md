@@ -1,84 +1,148 @@
 # Technical Architecture Documentation
 
-## 1. Vite + React Application Architecture
+## 1. Tech Stack & Overview
 
-**Vite + React 19 SPA with Redux Toolkit + Redux Saga, consuming TMDB API**
-
-### 1.1. Tech Stack
+**Vite + React 19 SPA** with Redux Toolkit + Redux Saga consuming TMDB API
 
 - **Build/Runtime**: Vite 5.4.21, React 19.2.0, TypeScript 5.2.2
 - **State/Routing**: Redux Toolkit 2.2.1 + Redux Saga, React Router DOM 6.22.2
-- **API/Styling**: Axios 1.6.7, Tailwind CSS 4.1.17 + SCSS modules
-- **UI**: shadcn/ui (Radix), Lucide React icons
+- **Styling/UI**: Tailwind CSS 4.1.17 + SCSS modules, Lucide React icons, Radix UI
 
-### 1.2. Architecture
-
-- **Frontend-Only SPA**: Client-side rendering with React Router
-- **Redux Pattern**: Centralized state via Redux Toolkit + Redux Saga for async
-- **Domain-Driven**: Features organized as modules (movieList, movieDetail)
-- **Atomic Design**: Components hierarchy (atoms → molecules → organisms)
-
-## 2. System Architecture
-
-**Movie Discovery App**: Frontend-only React app browsing/searching movies via TMDB API with Redux state management
-
-### High-Level Flow
-
-```
-React Components → Redux (Actions/Slices) → Redux Saga (Async) → Axios → TMDB API
-```
-
-## 3. Project Structure
+## 2. Project Structure
 
 ```
 src/
 ├── core/
-│   ├── components/       # Atomic Design: atoms, molecules, organisms, templates
-│   ├── domains/types/    # TypeScript interfaces (components.ts, movie.ts, services.ts)
-│   ├── hooks/            # useStore.ts (Redux typed hooks), useMovieService.ts
-│   ├── services/         # axios.ts, endpoints.ts, queryClient.ts (legacy)
-│   ├── store/            # Redux: globalSlice.ts, movieSlice.ts, sagas/
-│   └── utils/            # cn.ts, date.ts, debounce.ts, image.ts, number.ts
-├── modules/              # Domain-driven features
-│   ├── movieList/        # List feature with components
-│   └── movieDetail/      # Detail feature with components
-├── pages/                # React Router pages: HomePage, DetailPage
-├── App.tsx, main.tsx     # Entry points
+│   ├── components/          # Reusable atomic components (core layer)
+│   │   ├── atoms/           # Button, Loader, Text, Search, Genre, etc.
+│   │   ├── molecules/       # Navbar, Card, StatisticsBoard
+│   │   ├── organisms/       # ListView (complex compositions)
+│   │   └── templates/       # Container layouts
+│   ├── domains/types/       # Shared TypeScript interfaces
+│   ├── hooks/               # useStore, useMovieService, useApi
+│   ├── services/            # axios instance, API endpoints
+│   ├── store/               # Redux slices & sagas
+│   └── utils/               # Shared utilities (cn, date, image, etc.)
+├── modules/                 # Domain-driven features (feature isolation)
+│   ├── movieList/
+│   │   ├── components/      # Local atomic hierarchy
+│   │   │   ├── MovieList.tsx
+│   │   │   └── atoms/       # Local atoms (MovieListSkeleton, etc.)
+│   │   └── handlers/        # Feature-specific handlers
+│   └── movieDetail/
+│       ├── components/      # Local atomic hierarchy
+│       │   ├── Detail.tsx
+│       │   └── atoms/       # Local atoms (DetailPageSkeleton, etc.)
+│       └── handlers/        # Feature-specific handlers
+├── pages/                   # React Router pages (HomePage, DetailPage)
+├── App.tsx, main.tsx        # Entry points
 └── constants.ts, index.css
 ```
 
-**Key Pattern**: `movieSlice.ts` (Redux state) ← `movieSaga.ts` (async side effects) ← `axiosInstance` (API)
+## 3. Component Architecture & Import Rules
 
-## 4. Redux Saga Implementation
+### Atomic Design Hierarchy (Core Layer)
 
-**Redux Saga Pattern (Simplified):**
+Components follow strict atomic design with NO cross-layer imports:
+
+- **Atoms** (simplest): `Button`, `Loader`, `Text`, `Search`, `Genre`, `Image`, etc.
+
+  - ✅ Can import: utilities, types, React
+  - ❌ Cannot import: other atoms, molecules, organisms
+
+- **Molecules** (medium): `Navbar`, `Card`, `StatisticsBoard`
+
+  - ✅ Can import: atoms, utilities, types, React
+  - ❌ Cannot import: other molecules, organisms
+
+- **Organisms** (complex): `ListView` (compositions of molecules + atoms)
+
+  - ✅ Can import: molecules, atoms, utilities, types, React
+  - ❌ Cannot import: other organisms
+
+- **Templates**: Container layout wrappers
+  - ✅ Can import: organisms, molecules, atoms, utilities, types, React
+
+### Feature Modules (Module Layer)
+
+Each feature (`movieList`, `movieDetail`) has its own atomic hierarchy:
+
+```
+modules/movieList/components/
+├── MovieList.tsx (main component)
+├── MovieList.styles.scss
+├── atoms/
+│   └── MovieListSkeleton.tsx (feature-specific)
+└── index.ts
+
+modules/movieDetail/components/
+├── Detail.tsx (main component)
+├── Detail.styles.scss
+├── atoms/
+│   └── DetailPageSkeleton.tsx (feature-specific)
+└── index.ts
+```
+
+### Import Rules (Critical)
+
+1. **Core components cannot import from modules**
+
+   - ❌ `src/core/components/molecules/Card.tsx` cannot import from `src/modules/movieList`
+
+2. **Module components can import from core**
+
+   - ✅ `src/modules/movieList/components/MovieList.tsx` → import from `@/core/components`
+
+3. **Modules cannot import from other modules' components**
+
+   - ❌ `src/modules/movieList` cannot import from `src/modules/movieDetail/components`
+   - ✅ `src/modules/movieList` can import from `src/modules/movieDetail/handlers` or shared core
+
+4. **Local module atoms are feature-specific**
+
+   - Use `./atoms` or `@/modules/movieList/components/atoms` for module-local atoms
+   - Do NOT reuse module atoms in other modules
+
+5. **Import order** (maintain across all files):
+   - External packages (React, Redux, routing)
+   - Core hooks & actions
+   - Components (use `@/` paths)
+   - Utilities, types
+   - Styles (SCSS modules)
+
+## 4. Redux State Management
+
+**Redux Saga Pattern** (Redux Toolkit + Redux Saga for async operations):
 
 ```typescript
-// movieSlice.ts - Actions + State
+// movieSlice.ts - State + Actions
 const movieSlice = createSlice({
   name: "movie",
-  initialState: { movieList: null, loading: false, error: null },
+  initialState: {
+    movieList: null,
+    loadingStates: { movieList: false },
+    error: null,
+  },
   reducers: {
     fetchMovieListRequest: (state) => {
-      state.loading = true;
+      state.loadingStates.movieList = true;
     },
     fetchMovieListSuccess: (state, action) => {
       state.movieList = action.payload;
-      state.loading = false;
+      state.loadingStates.movieList = false;
     },
     fetchMovieListFailure: (state, action) => {
       state.error = action.payload;
-      state.loading = false;
+      state.loadingStates.movieList = false;
     },
   },
 });
 
-// movieSaga.ts - Async + Side Effects
+// movieSaga.ts - Side Effects (Async Operations)
 function* fetchMovieListSaga(action) {
   try {
-    const { type, page } = action.payload;
-    const response = yield call(axiosInstance.get, `/3/movie/${type}`, {
-      params: { page },
+    const response = yield call(axiosInstance.get, "/3/movie/now_playing", {
+      params: { page: action.payload.page },
     });
     yield put(fetchMovieListSuccess(response.data));
   } catch (error) {
@@ -86,92 +150,83 @@ function* fetchMovieListSaga(action) {
   }
 }
 
+// Watchers bind actions to saga functions
 export function* watchFetchMovieList() {
   yield takeLatest(fetchMovieListRequest.type, fetchMovieListSaga);
 }
+```
 
-// store/index.ts - Configure middleware
-const store = configureStore({
-  reducer: rootReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),
-});
-sagaMiddleware.run(rootSaga);
+**Using Redux in Components**:
 
-// Component Usage
-const { dispatch } = useAppDispatch();
-const { movieList, loading } = useAppSelector((state) => state.movie);
+```typescript
+// Typed hooks from core/hooks/useStore.ts
+const dispatch = useAppDispatch();
+const { movieList, loadingStates, error } = useAppSelector(
+  (state) => state.movie
+);
 
+// Dispatch actions
 useEffect(() => {
-  dispatch(fetchMovieListRequest({ type: "now_playing", page: 1 }));
+  dispatch(fetchMovieListRequest({ page: 1 }));
 }, [dispatch]);
 ```
 
-## 5. Code Standards
+## 5. Data Flow & Hooks
 
-### Components (Atomic Design)
+**Standard data flow**:
 
-- **Atoms**: Button, EmptyState, Loader, Pagination, Search, Tab, Text, Toast
-- **Molecules**: Card, NavBar, StatisticsBoard
-- **Organisms**: ListView
-- **Pattern**: `ComponentName/ComponentName.tsx` + `ComponentName.styles.scss` + `index.ts`
-
-### Utilities
-
-```typescript
-// services/axios.ts
-export const axiosInstance = axios.create({
-  baseURL: TMDB_BASE_URL,
-  params: { api_key },
-});
-axiosInstance.interceptors.request.use((config) => config);
-axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error) => Promise.reject(error)
-);
-
-// utils/image.ts
-export const getImageUrl = (path: string) =>
-  `${TMDB_IMAGE_BASE_URL}/w500${path}`;
-
-// utils/cn.ts
-export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
+```
+Components → useAppDispatch/useAppSelector → Redux Slices → Redux Saga → axios → TMDB API
 ```
 
-### Import Order
+**Custom hooks** (`core/hooks/useMovieService.ts`):
 
-1. React/External packages
-2. Redux hooks/actions
-3. Components & utilities (@/ imports)
-4. Styles (SCSS modules)
+- `useMovieListFetch()`: Fetches movie list via saga
+- `useGenresFetch()`: Fetches genres
+- `useMovieDetailFetch()`: Fetches movie details
 
-### Page Component with Redux
+**Pattern**: Use custom hooks in components to encapsulate Redux dispatch logic.
 
-```typescript
-export function HomePage() {
-  const dispatch = useAppDispatch();
-  const { movieList, loading } = useAppSelector((state) => state.movie);
+## 6. File Naming & Organization
 
-  useEffect(() => {
-    dispatch(fetchMovieListRequest({ type: "now_playing", page: 1 }));
-  }, [dispatch]);
+**Component files**:
 
-  return (
-    <div>
-      {loading ? <Loader /> : <MovieList movies={movieList?.results} />}
-    </div>
-  );
-}
+- Single file: `ComponentName.tsx` (simple atoms)
+- Complex: `ComponentName/ComponentName.tsx` + `ComponentName.styles.scss` + `index.ts`
+- Export via `index.ts` for clean imports
+
+**Example structure**:
+
+```
+src/core/components/atoms/Button/
+├── button.tsx              # Component logic
+├── Button.styles.scss      # Styles
+└── index.ts                # Export: export { Button } from "./button"
+
+src/modules/movieList/components/
+├── MovieList.tsx           # Main feature component
+├── MovieList.styles.scss   # Styles
+├── atoms/                  # Feature-specific atoms
+│   └── MovieListSkeleton.tsx
+└── index.ts                # Export: export { MovieList } from "./MovieList"
 ```
 
-### Routing
+## 7. Development Best Practices
 
-```typescript
-// App.tsx
-<BrowserRouter>
-  <Routes>
-    <Route path="/" element={<HomePage />} />
-    <Route path="/movie/:id" element={<DetailPage />} />
-  </Routes>
-</BrowserRouter>
-```
+**Code Quality**:
+
+- `bun run type-check`: Validate TypeScript compilation
+- `bun run lint`: Enforce ESLint rules
+- `bun run build`: Verify production build
+
+**Performance**:
+
+- Use `memo()` for expensive components
+- Debounce search/filter actions
+- Lazy load images with TMDB URLs
+
+**Type Safety**:
+
+- Strict TypeScript usage (no implicit `any`)
+- Use shared types from `core/domains/types/`
+- Maintain type contracts between layers

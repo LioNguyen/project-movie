@@ -1,8 +1,7 @@
 import axios from "axios";
 
 import store from "@/core/store";
-import { hideLoader, showLoader, showToast } from "@/core/store/globalSlice";
-import { getMovieDetail, getMovieImage } from "@/core/store/movieSlice";
+import { showToast } from "@/core/store/globalSlice";
 
 export const API_END_POINT = {
   NOW_PLAYING: "/3/movie/now_playing",
@@ -43,47 +42,4 @@ export const createAxios = () => {
   );
 
   return axiosInstance;
-};
-
-export const getData = async (
-  url: string,
-  params?: any,
-  successCallback?: (res: any) => void,
-  failureCallback?: () => void
-) => {
-  const axios = createAxios();
-  try {
-    store.dispatch(showLoader());
-    const res = await axios.get(url, { params });
-
-    if (res) {
-      if (successCallback) {
-        successCallback(res.data);
-      }
-
-      return { data: res.data };
-    }
-  } catch (error) {
-    console.log({ error });
-    store.dispatch(
-      showToast({ type: "error", title: "Something went wrong!" })
-    );
-    if (failureCallback) {
-      failureCallback();
-    }
-  } finally {
-    store.dispatch(hideLoader());
-  }
-};
-
-export const getImage = (movieId: string) => {
-  getData(API_END_POINT.POSTER.replace("{movie_id}", movieId), null, (res) => {
-    store.dispatch(getMovieImage({ ...res }));
-  });
-};
-
-export const getDetail = (movieId: string) => {
-  getData(API_END_POINT.DETAIL.replace("{movie_id}", movieId), null, (res) => {
-    store.dispatch(getMovieDetail({ ...res }));
-  });
 };
